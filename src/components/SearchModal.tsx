@@ -62,8 +62,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-start justify-center pt-16">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden">
         {/* Search Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-gray-200">
-          <Search className="w-5 h-5 text-gray-400" />
+        <div className="flex items-center gap-3 p-4 border-b border-gray-300">
+          <Search className="w-5 h-5 text-gray-500" />
           <input
             ref={inputRef}
             type="text"
@@ -76,7 +76,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 

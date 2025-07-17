@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Search, Menu } from 'lucide-react';
-import SearchModal from './SearchModal';
+
+// Lazy load SearchModal
+const SearchModal = lazy(() => import('./SearchModal'));
 
 const Header: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
     <>
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+      <header className="bg-white shadow-sm border-b border-gray-300 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
@@ -34,10 +36,16 @@ const Header: React.FC = () => {
               >
                 <Search className="w-5 h-5" />
               </button>
-              <button className="p-2 text-gray-700 hover:text-gray-900 transition-colors">
+              <button 
+                className="p-2 text-gray-700 hover:text-gray-900 transition-colors"
+                aria-label="Shopping cart"
+              >
                 <ShoppingCart className="w-5 h-5" />
               </button>
-              <button className="md:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors">
+              <button 
+                className="md:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors"
+                aria-label="Open menu"
+              >
                 <Menu className="w-5 h-5" />
               </button>
             </div>
@@ -45,10 +53,14 @@ const Header: React.FC = () => {
         </div>
       </header>
       
-      <SearchModal 
-        isOpen={isSearchOpen} 
-        onClose={() => setIsSearchOpen(false)} 
-      />
+      {isSearchOpen && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <SearchModal 
+            isOpen={isSearchOpen} 
+            onClose={() => setIsSearchOpen(false)} 
+          />
+        </Suspense>
+      )}
     </>
   );
 };

@@ -14,6 +14,7 @@ export default defineConfig({
       compress: {
         drop_console: true,
         drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
       },
     },
     rollupOptions: {
@@ -22,9 +23,12 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
           query: ['@tanstack/react-query'],
+          icons: ['lucide-react'],
+          utils: ['react-intersection-observer'],
         },
       },
     },
+    chunkSizeWarningLimit: 1000,
   },
   server: {
     host: true,

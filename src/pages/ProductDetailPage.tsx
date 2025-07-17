@@ -60,7 +60,7 @@ const ProductDetailPage: React.FC = () => {
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-500 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
             {/* Product Image */}
             <div className="aspect-square">
@@ -119,7 +119,7 @@ const ProductDetailPage: React.FC = () => {
                   {(product.stock || 0) > 0 ? (
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-green-600 font-medium">In Stock ({product.stock || 0} available)</span>
+                      <span className="text-green-700 font-medium">In Stock ({product.stock || 0} available)</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">

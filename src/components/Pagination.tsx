@@ -43,6 +43,7 @@ const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className="flex items-center justify-center space-x-2 mt-8">
       <button
+        aria-label='Go to the previous page'
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
@@ -52,6 +53,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {getVisiblePages().map((page, index) => (
         <button
+          aria-label={`Go to page ${page}`}
           key={index}
           onClick={() => typeof page === 'number' && onPageChange(page)}
           disabled={page === '...'}
@@ -68,6 +70,7 @@ const Pagination: React.FC<PaginationProps> = ({
       ))}
 
       <button
+        aria-label='Go to the next page'
         onClick={() => onPageChange(currentPage + 1)}
         disabled={!hasMore}
         className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
