@@ -31,7 +31,7 @@ const Header: React.FC = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'statistics-report.csv';
+      link.download = 'product_statistics.csv';
       
       // Trigger the download
       document.body.appendChild(link);
