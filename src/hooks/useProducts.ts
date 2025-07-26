@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Product, ProductsResponse, SearchResponse } from '../types/product';
+import { Product, ProductsResponse, SearchResponse, CategoryProductsResponse } from '../types/product';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -36,18 +36,18 @@ export const useProducts = (page: number = 1, limit: number = 20) => {
   });
 };
 
-export const useProduct = (id: string) => {
+export const useProduct = (index: string) => {
   return useQuery({
-    queryKey: ['product', id],
+    queryKey: ['product', index],
     queryFn: async (): Promise<Product> => {
-      const response = await fetch(`${API_BASE_URL}/products/${id}`);
+      const response = await fetch(`${API_BASE_URL}/products/${index}`);
       if (!response.ok) {
         throw new Error('Failed to fetch product');
       }
       const data = await response.json();
       return transformProduct(data);
     },
-    enabled: !!id,
+    enabled: !!index,
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };
@@ -71,7 +71,7 @@ export const useSearchProducts = (query: string, page: number = 1, limit: number
   return useQuery({
     queryKey: ['products', 'search', query, page, limit],
     queryFn: async (): Promise<SearchResponse> => {
-      const response = await fetch(`${API_BASE_URL}/products/search?search=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
+      const response = await fetch(`${API_BASE_URL}/products/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
       if (!response.ok) {
         throw new Error('Failed to search products');
       }
@@ -89,3 +89,27 @@ export const useSearchProducts = (query: string, page: number = 1, limit: number
     staleTime: 2 * 60 * 1000, // 2 minutes for search results
   });
 };
+
+export const useCategoryProducts = (categoryName: string) => {
+  return useQuery({
+    queryKey: ['products', 'category', categoryName],
+    queryFn: async (): Promise<CategoryProductsResponse> => {
+      const response = await fetch(`${API_BASE_URL}/products/category/${encodeURIComponent(categoryName)}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch category products');
+      }
+      const data = await response.json();
+      
+      return {
+        products: data.products.map(transformProduct),
+        category: data.category,
+        count: data.count,
+        categoryMatches: data.categoryMatches,
+        randomProducts: data.randomProducts,
+      };
+    },
+    enabled: !!categoryName && categoryName.trim().length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+

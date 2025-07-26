@@ -1,15 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useProducts, useSearchProducts } from '../hooks/useProducts';
+import { Product } from '../types/product';
 import ProductGrid from '../components/ProductGrid';
 import Pagination from '../components/Pagination';
 import LoadingSpinner from '../components/LoadingSpinner';
 
+type SortOption = {
+  value: string;
+  label: string;
+  sortFn: (a: Product, b: Product) => number;
+};
+
+const sortOptions: SortOption[] = [
+  {
+    value: 'name-asc',
+    label: 'Name (A-Z)',
+    sortFn: (a, b) => a.name.localeCompare(b.name)
+  },
+  {
+    value: 'name-desc',
+    label: 'Name (Z-A)',
+    sortFn: (a, b) => b.name.localeCompare(a.name)
+  },
+  {
+    value: 'price-asc',
+    label: 'Price (Low to High)',
+    sortFn: (a, b) => a.price - b.price
+  },
+  {
+    value: 'price-desc',
+    label: 'Price (High to Low)',
+    sortFn: (a, b) => b.price - a.price
+  },
+  {
+    value: 'brand-asc',
+    label: 'Brand (A-Z)',
+    sortFn: (a, b) => (a.brand || '').localeCompare(b.brand || '')
+  },
+  {
+    value: 'stock-desc',
+    label: 'Stock (High to Low)',
+    sortFn: (a, b) => (b.stock || 0) - (a.stock || 0)
+  }
+];
+
 const ProductListPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState('name-asc');
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
-  const limit = 20;
+  const limit = 50;
   
   // Use search or regular products based on query
   const { data: searchData, isLoading: isSearchLoading, error: searchError } = useSearchProducts(
@@ -27,6 +68,11 @@ const ProductListPage: React.FC = () => {
     setCurrentPage(1);
   }, [searchQuery]);
 
+  // Reset page when sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortBy]);
+
   // Determine which data to use
   const data = searchQuery ? 
     (searchData ? {
@@ -38,9 +84,23 @@ const ProductListPage: React.FC = () => {
   const isLoading = searchQuery ? isSearchLoading : isProductsLoading;
   const error = searchQuery ? searchError : productsError;
 
+  // Sort products based on selected option
+  const sortedProducts = useMemo(() => {
+    if (!data?.products) return [];
+    
+    const selectedSort = sortOptions.find(option => option.value === sortBy);
+    if (!selectedSort) return data.products;
+    
+    return [...data.products].sort(selectedSort.sortFn);
+  }, [data?.products, sortBy]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(event.target.value);
   };
 
   if (error) {
@@ -63,9 +123,31 @@ const ProductListPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {searchQuery ? `Search Results for "${searchQuery}"` : 'All Products'}
-          </h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {searchQuery ? `Search Results for "${searchQuery}"` : 'All Products'}
+            </h1>
+            
+            {/* Sort Dropdown */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="sort" className="text-sm font-medium text-gray-700">
+                Sort by:
+              </label>
+              <select
+                id="sort"
+                value={sortBy}
+                onChange={handleSortChange}
+                className="px-3 py-2 border-2 border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 transition-colors duration-200"
+              >
+                {sortOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
           {data && (
             <p className="text-gray-600">
               {searchQuery 
@@ -80,7 +162,7 @@ const ProductListPage: React.FC = () => {
           <LoadingSpinner />
         ) : (
           <>
-            <ProductGrid products={data?.products || []} />
+            <ProductGrid products={sortedProducts} />
             
             {data && (data.total || 0) > limit && (
               <Pagination

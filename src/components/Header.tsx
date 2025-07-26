@@ -1,12 +1,13 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Search, Menu } from 'lucide-react';
+import { ShoppingCart, Search, Menu, X } from 'lucide-react';
 
 // Lazy load SearchModal
 const SearchModal = lazy(() => import('./SearchModal'));
 
 const Header: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <>
@@ -43,14 +44,37 @@ const Header: React.FC = () => {
                 <ShoppingCart className="w-5 h-5" />
               </button>
               <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="md:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors"
-                aria-label="Open menu"
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               >
-                <Menu className="w-5 h-5" />
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 bg-white">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link 
+                to="/" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+              >
+                Home
+              </Link>
+              <Link 
+                to="/products" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+              >
+                Products
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
       
       {isSearchOpen && (

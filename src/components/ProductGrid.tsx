@@ -13,7 +13,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, loading }) => {
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {Array.from({ length: 8 }).map((_, index) => (
+        {Array.from({ length: 12 }).map((_, index) => (
           <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-300 animate-pulse">
             <div className="aspect-square bg-gray-200 rounded-t-lg"></div>
             <div className="p-4">
