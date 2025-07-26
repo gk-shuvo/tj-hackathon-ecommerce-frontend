@@ -1,5 +1,6 @@
 export interface Product {
   id: number;
+  index: number;
   name: string;
   price: number;
   description: string;
@@ -35,6 +36,14 @@ export interface SearchResponse {
   limit: number;
   total: number;
   searchTerm: string;
+}
+
+export interface CategoryProductsResponse {
+  products: Product[];
+  category: string;
+  count: number;
+  categoryMatches: number;
+  randomProducts: number;
 }
 
 export interface ApiResponse<T> {

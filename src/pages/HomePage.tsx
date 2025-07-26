@@ -1,10 +1,10 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useLatestProducts } from '../hooks/useProducts';
 import ImageSlider from '../components/ImageSlider';
 import ProductGrid from '../components/ProductGrid';
-import LoadingSpinner from '../components/LoadingSpinner';
+
 
 // Skeleton component for products
 const ProductsSkeleton: React.FC = () => (
@@ -26,7 +26,7 @@ const ProductsSkeleton: React.FC = () => (
 );
 
 const HomePage: React.FC = () => {
-  const { data: latestProducts, isLoading, error } = useLatestProducts(8);
+  const { data: latestProducts, isLoading, error } = useLatestProducts(10);
 
   return (
     <div className="min-h-screen bg-gray-50">
