@@ -1,6 +1,6 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Search, Menu, X } from 'lucide-react';
+import { ShoppingCart, Search, Menu, X, Download } from 'lucide-react';
 
 // Lazy load SearchModal
 const SearchModal = lazy(() => import('./SearchModal'));
@@ -8,6 +8,45 @@ const SearchModal = lazy(() => import('./SearchModal'));
 const Header: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadReport = async () => {
+    try {
+      setIsDownloading(true);
+      const response = await fetch('/api/statistics/download', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Get the blob from the response
+      const blob = await response.blob();
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'statistics-report.csv';
+      
+      // Trigger the download
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      alert('Failed to download report. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <>
@@ -27,6 +66,14 @@ const Header: React.FC = () => {
               <Link to="/products" className="text-gray-700 hover:text-gray-900 transition-colors">
                 Products
               </Link>
+              <button
+                onClick={handleDownloadReport}
+                disabled={isDownloading}
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Download className="w-4 h-4" />
+                {isDownloading ? 'Downloading...' : 'Download Report'}
+              </button>
             </nav>
             
             <div className="flex items-center gap-4">
@@ -72,6 +119,17 @@ const Header: React.FC = () => {
               >
                 Products
               </Link>
+              <button
+                onClick={() => {
+                  handleDownloadReport();
+                  setIsMobileMenuOpen(false);
+                }}
+                disabled={isDownloading}
+                className="flex items-center gap-2 w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Download className="w-4 h-4" />
+                {isDownloading ? 'Downloading...' : 'Download Report'}
+              </button>
             </div>
           </div>
         )}
