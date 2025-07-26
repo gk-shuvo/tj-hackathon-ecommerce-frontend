@@ -34,8 +34,10 @@ const LazyImage: React.FC<LazyImageProps> = ({
     setHasError(true);
   }, []);
 
+
   // Simplified URL handling
-  const optimizedSrc = src.startsWith('http') ? src : `http://localhost:3000/images/${src}`;
+  const optimizedSrc = src.startsWith('http') ? src : `/product-images/${src}`;
+  console.log(optimizedSrc, "SRC");
 
   return (
     <div 
